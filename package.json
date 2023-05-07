@@ -21,6 +21,7 @@
     "canvas": "^2.11.2",
     "jsdom": "^22.0.0",
     "svelte": "^3.59.0",
-    "utf-8-validate": "^6.0.3"
+    "utf-8-validate": "^6.0.3",
+    "@astrojs/cloudflare": "^6.2.4",
   }
 }
