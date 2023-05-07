@@ -1,6 +1,4 @@
-import { APIRoute } from 'astro';
-
-
+// index.js
 import { JSDOM } from 'jsdom';
 
 const base_url = "https://www.shutterstock.com/id/search/keyword%3a-";
@@ -57,14 +55,18 @@ const fetchKeywordCounts = async (keywords) => {
     return hasil;
 };
 
-export const post: APIRoute = async ({ request }) => {
+async function handleRequest(request) {
     const keywords = await request.json();
     const hasil = await fetchKeywordCounts(keywords);
 
-    return {
-        body: JSON.stringify({
-            message: "Keyword counts fetched successfully!",
-            data: hasil
-        })
-    }
-};
+    return new Response(JSON.stringify({
+        message: "Keyword counts fetched successfully!",
+        data: hasil
+    }), {
+        headers: { 'Content-Type': 'application/json' }
+    });
+}
+
+addEventListener('fetch', event => {
+    event.respondWith(handleRequest(event.request));
+});
