@@ -2,4 +2,4 @@
 
 Moga bermanfaat
 
-(Nyoba disini Yak)[https://penghitung.pages.dev/]
+https://penghitung.pages.dev/
