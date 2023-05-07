@@ -1,3 +1,8 @@
+import { APIRoute } from 'astro';
+
+
+import { JSDOM } from 'jsdom';
+
 const base_url = "https://www.shutterstock.com/id/search/keyword%3a-";
 const headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
@@ -45,6 +50,7 @@ const getKeywordCount = async keyword => {
         console.error(`Error: ${error.message}`);
         return "data tidak ditemukan";
     }
+};
 };
 
 const fetchKeywordCounts = async keywords => {
@@ -107,10 +113,14 @@ response.headers.set('Access-Control-Max-Age', '86400');
 return response;
 }
 
-addEventListener("fetch", event => {
-if (event.request.method === "OPTIONS") {
-event.respondWith(handlePreflight(event.request));
-} else {
-event.respondWith(handleRequest(event.request));
-}
-});
+export const post: APIRoute = async ({ request }) => {
+    const keywords = await request.json();
+    const hasil = await fetchKeywordCounts(keywords);
+
+    return {
+        body: JSON.stringify({
+            message: "Keyword counts fetched successfully!",
+            data: hasil
+        })
+    }
+};
