@@ -1,71 +1,27 @@
 <script>
-  let keywordsInput = "";
-  let result = null;
-  let loading = false;
-  let textarea;
+  import { fetchKeywordCounts } from "./fetchKeywordCounts";
+  import { keywordsInput, result, loading, errorMessage } from "./store";
+  import KeywordInput from "./KeywordInput.svelte";
+  import ResultTable from "./ResultTable.svelte";
 
-  const resizeTextarea = () => {
-    textarea.style.height = "auto";
-    textarea.style.height = `${textarea.scrollHeight}px`;
-  };
-  const fetchKeywordCounts = async () => {
-    loading = true;
-    const keywords = keywordsInput.split(",").map((keyword) => keyword.trim());
-
-    const response = await fetch("./api/scraper", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(keywords),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      result = data.data;
-    } else {
-      console.error(`Error: ${response.statusText}`);
-    }
-    loading = false;
-    console.log(keywordsInput);
+  const handleSubmit = async () => {
+    await fetchKeywordCounts();
   };
 </script>
 
 <section>
-  <h1>Pencari Golden Keyword</h1>
-  <form on:submit|preventDefault={fetchKeywordCounts}>
+  <h1>Pencari Golden Keyword di Shutterstock</h1>
+  <form on:submit|preventDefault={handleSubmit}>
     <label for="keywords">Masukkan Keyword (Pisahkan dengan Koma):</label>
-
-    <textarea
-      bind:this={textarea}
-      bind:value={keywordsInput}
-      on:input={resizeTextarea}
-      rows="1"
-      placeholder="Masukkan teks di sini dan area teks akan tumbuh secara otomatis"
-      class="form-textarea"
-    />
-    <button type="submit" disabled={loading}>Cari Tahu 🤖</button>
+    <KeywordInput />
+    <button type="submit" disabled={$loading}>Cari Tahu 🤖</button>
   </form>
 
-  {#if loading}
+  {#if $errorMessage}
+  <p class="error-message">{$errorMessage}</p>
+  {:else if $loading}
   <p>Sedang Mengambil Data 🌟😄</p>
-{:else if result}
-  <table>
-    <thead>
-      <tr>
-        <th>Keyword</th>
-        <th>Jumlah</th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each result as { keyword, count }}
-      <tr>
-        <td>{keyword}</td>
-        <td>{typeof count === 'string' ? count : count.toLocaleString()}</td>
-      </tr>
-      {/each}
-    </tbody>
-  </table>
-{/if}
-
+  {:else}
+  <ResultTable />
+  {/if}
 </section>
